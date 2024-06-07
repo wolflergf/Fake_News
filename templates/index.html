@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Fake News Detector</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+   <style>
+       body {
+           font-family: Arial, sans-serif;
+           background-color: #f4f4f4;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: 100vh;
+           margin: 0;
+       }
+
+       .container {
+           background-color: #fff;
+           padding: 30px;
+           border-radius: 10px;
+           box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+           max-width: 600px;
+           width: 100%;
+       }
+
+       h1 {
+           text-align: center;
+           color: #333;
+       }
+
+       textarea {
+           width: 100%;
+           padding: 10px;
+           border: 1px solid #ccc;
+           border-radius: 5px;
+           resize: vertical;
+           font-size: 16px;
+       }
+
+       button {
+           display: block;
+           margin: 20px auto 0;
+           padding: 10px 20px;
+           background-color: #4CAF50;
+           color: #fff;
+           border: none;
+           border-radius: 5px;
+           cursor: pointer;
+           font-size: 16px;
+       }
+
+       #result {
+           margin-top: 20px;
+           font-size: 18px;
+           font-weight: bold;
+           text-align: center;
+       }
+
+       .fake {
+           color: #ff0000;
+       }
+
+       .real {
+           color: #4CAF50;
+       }
+   </style>
+</head>
+<body>
+   <div class="container">
+       <h1>Fake News Detector</h1>
+       <form id="newsForm">
+           <label for="newsText">Enter news text:</label><br>
+           <textarea id="newsText" name="newsText" rows="4" placeholder="Enter news text here..."></textarea><br><br>
+           <button type="button" onclick="submitText()"><i class="fas fa-search"></i> Submit</button>
+       </form>
+       <h2>Prediction Result:</h2>
+       <p id="result"></p>
+   </div>
+
+   <script>
+       function submitText() {
+           var text = document.getElementById("newsText").value;
+           fetch("/predict", {
+               method: "POST",
+               headers: {
+                   "Content-Type": "application/json"
+               },
+               body: JSON.stringify({ text: text })
+           })
+           .then(response => response.json())
+           .then(data => {
+               const resultElement = document.getElementById("result");
+               resultElement.classList.remove("fake", "real");
+               if (data.prediction === 0) {
+                   resultElement.innerText = "Fake News";
+                   resultElement.classList.add("fake");
+               } else {
+                   resultElement.innerText = "Real News";
+                   resultElement.classList.add("real");
+               }
+           });
+       }
+   </script>
+</body>
+</html>
